@@ -1,12 +1,34 @@
 [
-    { "model": "auth.user",
+    {
+        "model": "account.user",
         "pk": 1,
         "fields": {
-            "username": "admin",
-            "password": "pbkdf2_sha256$36000$eijqZp5ctxnE$xxCcAo/Rsuc+HddjGLQ6dUo/kDnuvayazUZ4V3xz52w=",
+            "password": "pbkdf2_sha256$150000$Gb4LnV1OJhHv$NRM9Fo1KzZQb682fkSHDvRiuFOzs/NJrAs9ttCaD3HY=",
+            "last_login": null,
             "is_superuser": true,
+            "username": "admin",
+            "first_name": "",
+            "last_name": "",
             "is_staff": true,
-            "is_active": true
+            "is_active": true,
+            "name": "",
+            "mobile": "",
+            "email": "",
+            "avatar": "",
+            "post": null,
+            "superior": null,
+            "groups": [
+
+            ],
+            "user_permissions": [
+
+            ],
+            "department": [
+
+            ],
+            "roles": [
+
+            ]
         }
     }
 ]

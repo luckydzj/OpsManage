@@ -27,6 +27,9 @@
 [传送门](https://github.com/welliamcao/OpsManage/wiki/Docker%E6%9E%84%E5%BB%BAOpsManage)-->
 
 ## 安装环境配置
+
+注: [使用docker-compose安装](https://github.com/welliamcao/OpsManage/blob/v3/README.md)推荐！！！
+
 一、安装Python
 ```
 # yum install epel-release -y

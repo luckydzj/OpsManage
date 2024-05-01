@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.47, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.51, for Linux (x86_64)
 --
 -- Host: localhost    Database: opsmanage
 -- ------------------------------------------------------
--- Server version	5.6.47-log
+-- Server version	5.6.51
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -64,7 +64,7 @@ CREATE TABLE `auth_permission` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id`,`codename`),
   CONSTRAINT `auth_permission_content_type_id_2f476e4b_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=216 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=206 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,7 +122,7 @@ CREATE TABLE `django_celery_beat_crontabschedule` (
   `month_of_year` varchar(64) NOT NULL,
   `timezone` varchar(63) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -137,7 +137,7 @@ CREATE TABLE `django_celery_beat_intervalschedule` (
   `every` int(11) NOT NULL,
   `period` varchar(24) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -181,7 +181,7 @@ CREATE TABLE `django_celery_beat_periodictask` (
   CONSTRAINT `django_celery_beat_p_crontab_id_d3cba168_fk_django_ce` FOREIGN KEY (`crontab_id`) REFERENCES `django_celery_beat_crontabschedule` (`id`),
   CONSTRAINT `django_celery_beat_p_interval_id_a8ca27da_fk_django_ce` FOREIGN KEY (`interval_id`) REFERENCES `django_celery_beat_intervalschedule` (`id`),
   CONSTRAINT `django_celery_beat_p_solar_id_a87ce72c_fk_django_ce` FOREIGN KEY (`solar_id`) REFERENCES `django_celery_beat_solarschedule` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -242,7 +242,7 @@ CREATE TABLE `django_celery_results_taskresult` (
   KEY `django_celery_results_taskresult_date_done_49edada6` (`date_done`),
   KEY `django_celery_results_taskresult_status_cbbed23a` (`status`),
   KEY `django_celery_results_taskresult_task_name_90987df3` (`task_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=12887 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -258,7 +258,7 @@ CREATE TABLE `django_content_type` (
   `model` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -274,7 +274,7 @@ CREATE TABLE `django_migrations` (
   `name` varchar(255) NOT NULL,
   `applied` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -290,6 +290,71 @@ CREATE TABLE `django_session` (
   `expire_date` datetime(6) NOT NULL,
   PRIMARY KEY (`session_key`),
   KEY `django_session_expire_date_a5c62663` (`expire_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `opsmanage_apply_config`
+--
+
+DROP TABLE IF EXISTS `opsmanage_apply_config`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `opsmanage_apply_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `apply_name` varchar(100) NOT NULL,
+  `apply_desc` varchar(200) NOT NULL,
+  `apply_icon` varchar(100) DEFAULT NULL,
+  `apply_type` varchar(50) NOT NULL,
+  `apply_playbook` varchar(200) NOT NULL,
+  `apply_payload` longtext,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `apply_name` (`apply_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `opsmanage_apply_tasks`
+--
+
+DROP TABLE IF EXISTS `opsmanage_apply_tasks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `opsmanage_apply_tasks` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user` int(11) NOT NULL,
+  `apply_id` int(11) NOT NULL,
+  `task_id` varchar(100) NOT NULL,
+  `task_per` varchar(10) NOT NULL,
+  `status` varchar(10) NOT NULL,
+  `deploy_type` varchar(20) NOT NULL,
+  `payload` longtext NOT NULL,
+  `create_time` datetime(6) NOT NULL,
+  `update_time` datetime(6) NOT NULL,
+  `error_msg` longtext,
+  PRIMARY KEY (`id`),
+  KEY `opsmanage_apply_tasks_apply_id_43b95b42` (`apply_id`),
+  KEY `opsmanage_apply_tasks_status_1f03e98b` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `opsmanage_apply_tasks_result`
+--
+
+DROP TABLE IF EXISTS `opsmanage_apply_tasks_result`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `opsmanage_apply_tasks_result` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_msg` longtext,
+  `task_name` varchar(200) DEFAULT NULL,
+  `task_type` varchar(10) DEFAULT NULL,
+  `create_time` datetime(6) NOT NULL,
+  `logId_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `opsmanage_apply_task_logId_id_89ed0732_fk_opsmanage` (`logId_id`),
+  CONSTRAINT `opsmanage_apply_task_logId_id_89ed0732_fk_opsmanage` FOREIGN KEY (`logId_id`) REFERENCES `opsmanage_apply_tasks` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -314,6 +379,7 @@ CREATE TABLE `opsmanage_assets` (
   `model` varchar(100) DEFAULT NULL,
   `status` smallint(6) DEFAULT NULL,
   `put_zone` smallint(6) DEFAULT NULL,
+  `idc` smallint(6) DEFAULT NULL,
   `group` smallint(6) DEFAULT NULL,
   `project` smallint(6) DEFAULT NULL,
   `host_vars` longtext,
@@ -323,7 +389,7 @@ CREATE TABLE `opsmanage_assets` (
   `update_date` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -342,7 +408,7 @@ CREATE TABLE `opsmanage_assets_business_tree` (
   KEY `opsmanage_assets_bus_business_tree_assets_11d9314e_fk_opsmanage` (`business_tree_assets_id`),
   CONSTRAINT `opsmanage_assets_bus_assets_id_1e61ec7e_fk_opsmanage` FOREIGN KEY (`assets_id`) REFERENCES `opsmanage_assets` (`id`),
   CONSTRAINT `opsmanage_assets_bus_business_tree_assets_11d9314e_fk_opsmanage` FOREIGN KEY (`business_tree_assets_id`) REFERENCES `opsmanage_business_assets` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -402,7 +468,7 @@ CREATE TABLE `opsmanage_business_env_assets` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -419,7 +485,7 @@ CREATE TABLE `opsmanage_cabinet_assets` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `opsmanage_cabinet_assets_idc_id_cabinet_name_b7871401_uniq` (`idc_id`,`cabinet_name`),
   CONSTRAINT `opsmanage_cabinet_as_idc_id_5fa1e503_fk_opsmanage` FOREIGN KEY (`idc_id`) REFERENCES `opsmanage_idc_assets` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -483,7 +549,7 @@ CREATE TABLE `opsmanage_database_detail` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `opsmanage_database_detail_db_server_id_db_name_3f6c7e03_uniq` (`db_server_id`,`db_name`),
   CONSTRAINT `opsmanage_database_d_db_server_id_96458abb_fk_opsmanage` FOREIGN KEY (`db_server_id`) REFERENCES `opsmanage_database_server_config` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -526,7 +592,7 @@ CREATE TABLE `opsmanage_database_server_config` (
   UNIQUE KEY `opsmanage_database_serve_db_business_db_env_db_as_b7b7ea13_uniq` (`db_business`,`db_env`,`db_assets_id`,`db_port`),
   KEY `opsmanage_database_s_db_assets_id_932f23f7_fk_opsmanage` (`db_assets_id`),
   CONSTRAINT `opsmanage_database_s_db_assets_id_932f23f7_fk_opsmanage` FOREIGN KEY (`db_assets_id`) REFERENCES `opsmanage_assets` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -542,13 +608,13 @@ CREATE TABLE `opsmanage_database_table_detail` (
   `table_name` varchar(100) DEFAULT NULL,
   `table_size` int(11) DEFAULT NULL,
   `table_row` int(11) DEFAULT NULL,
-  `last_time` int(11) DEFAULT NULL,
   `table_engine` varchar(50) DEFAULT NULL,
   `collation` varchar(50) DEFAULT NULL,
   `format` varchar(50) DEFAULT NULL,
+  `last_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `opsmanage_database_table_detail_db_table_name_c16db963_idx` (`db`,`table_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=703 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -569,7 +635,7 @@ CREATE TABLE `opsmanage_database_user` (
   `create_time` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `opsmanage_database_user_db_user_a8f95aa4_uniq` (`db`,`user`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -586,7 +652,7 @@ CREATE TABLE `opsmanage_deploy_callback_model_result` (
   PRIMARY KEY (`id`),
   KEY `opsmanage_deploy_cal_logId_id_b37fad6f_fk_opsmanage` (`logId_id`),
   CONSTRAINT `opsmanage_deploy_cal_logId_id_b37fad6f_fk_opsmanage` FOREIGN KEY (`logId_id`) REFERENCES `opsmanage_log_deploy_model` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -603,7 +669,7 @@ CREATE TABLE `opsmanage_deploy_callback_playbook_result` (
   PRIMARY KEY (`id`),
   KEY `opsmanage_deploy_cal_logId_id_75c9da2c_fk_opsmanage` (`logId_id`),
   CONSTRAINT `opsmanage_deploy_cal_logId_id_75c9da2c_fk_opsmanage` FOREIGN KEY (`logId_id`) REFERENCES `opsmanage_log_deploy_playbook` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=166 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -621,7 +687,7 @@ CREATE TABLE `opsmanage_deploy_inventory` (
   `create_time` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -639,7 +705,7 @@ CREATE TABLE `opsmanage_deploy_inventory_groups` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `opsmanage_deploy_invento_inventory_id_group_name_542eb7cd_uniq` (`inventory_id`,`group_name`),
   CONSTRAINT `opsmanage_deploy_inv_inventory_id_45534ede_fk_opsmanage` FOREIGN KEY (`inventory_id`) REFERENCES `opsmanage_deploy_inventory` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -656,7 +722,7 @@ CREATE TABLE `opsmanage_deploy_inventory_groups_servers` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `opsmanage_deploy_invento_groups_id_server_10234330_uniq` (`groups_id`,`server`),
   CONSTRAINT `opsmanage_deploy_inv_groups_id_46853636_fk_opsmanage` FOREIGN KEY (`groups_id`) REFERENCES `opsmanage_deploy_inventory_groups` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -684,7 +750,7 @@ CREATE TABLE `opsmanage_deploy_playbook` (
   `update_date` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `playbook_name` (`playbook_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -776,7 +842,7 @@ CREATE TABLE `opsmanage_fileupload_audit_order` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `order_id` (`order_id`),
   CONSTRAINT `opsmanage_fileupload_order_id_86839b06_fk_opsmanage` FOREIGN KEY (`order_id`) REFERENCES `opsmanage_order_system` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -801,7 +867,7 @@ CREATE TABLE `opsmanage_idc_assets` (
   PRIMARY KEY (`id`),
   KEY `opsmanage_idc_assets_zone_id_93165d61_fk_opsmanage` (`zone_id`),
   CONSTRAINT `opsmanage_idc_assets_zone_id_93165d61_fk_opsmanage` FOREIGN KEY (`zone_id`) REFERENCES `opsmanage_zone_assets` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -822,7 +888,7 @@ CREATE TABLE `opsmanage_idle_assets` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `opsmanage_idle_assets_idc_id_idle_name_fd0e1567_uniq` (`idc_id`,`idle_name`),
   CONSTRAINT `opsmanage_idle_assets_idc_id_f886858a_fk_opsmanage_idc_assets_id` FOREIGN KEY (`idc_id`) REFERENCES `opsmanage_idc_assets` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -848,7 +914,7 @@ CREATE TABLE `opsmanage_ipvs_config` (
   UNIQUE KEY `opsmanage_ipvs_config_vip_port_ipvs_assets_id_1224c376_uniq` (`vip`,`port`,`ipvs_assets_id`),
   KEY `opsmanage_ipvs_confi_ipvs_assets_id_4a974e78_fk_opsmanage` (`ipvs_assets_id`),
   CONSTRAINT `opsmanage_ipvs_confi_ipvs_assets_id_4a974e78_fk_opsmanage` FOREIGN KEY (`ipvs_assets_id`) REFERENCES `opsmanage_assets` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -925,7 +991,7 @@ CREATE TABLE `opsmanage_line_assets` (
   `update_time` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `line_name` (`line_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -962,7 +1028,7 @@ CREATE TABLE `opsmanage_log_deploy_model` (
   `ans_server` longtext NOT NULL,
   `create_time` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -981,7 +1047,7 @@ CREATE TABLE `opsmanage_log_deploy_playbook` (
   `ans_server` longtext NOT NULL,
   `create_time` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1008,7 +1074,7 @@ CREATE TABLE `opsmanage_log_project_config` (
   UNIQUE KEY `task_id` (`task_id`),
   KEY `opsmanage_log_projec_project_id_c7374dd9_fk_opsmanage` (`project_id`),
   CONSTRAINT `opsmanage_log_projec_project_id_c7374dd9_fk_opsmanage` FOREIGN KEY (`project_id`) REFERENCES `opsmanage_project_config` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1028,7 +1094,7 @@ CREATE TABLE `opsmanage_log_project_record` (
   `create_time` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `opsmanage_log_project_record_task_id_42fa4e9e` (`task_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1151,7 +1217,7 @@ CREATE TABLE `opsmanage_networkcard_assets` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `opsmanage_networkcard_assets_assets_id_macaddress_1dfdb30c_uniq` (`assets_id`,`macaddress`),
   CONSTRAINT `opsmanage_networkcar_assets_id_e3a35064_fk_opsmanage` FOREIGN KEY (`assets_id`) REFERENCES `opsmanage_assets` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1193,7 +1259,7 @@ CREATE TABLE `opsmanage_order_system` (
   `end_time` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `opsmanage_order_system_order_subject_order_user_43930f38_uniq` (`order_subject`,`order_user`,`order_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1213,7 +1279,7 @@ CREATE TABLE `opsmanage_order_system_log` (
   `operation_time` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `opsmanage_order_system_log_order_0f624cf7` (`order`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1249,7 +1315,7 @@ CREATE TABLE `opsmanage_project_config` (
   `project_target_root` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `opsmanage_project_config_project_env_project_name_1265fdc6_uniq` (`project_env`,`project_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1282,7 +1348,7 @@ CREATE TABLE `opsmanage_raid_assets` (
   `raid_name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `raid_name` (`raid_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1324,7 +1390,7 @@ CREATE TABLE `opsmanage_redis_detail` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `opsmanage_redis_detail_db_server_id_db_name_e04348ff_uniq` (`db_server_id`,`db_name`),
   CONSTRAINT `opsmanage_redis_deta_db_server_id_2ab86cf5_fk_opsmanage` FOREIGN KEY (`db_server_id`) REFERENCES `opsmanage_redis_server_config` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1340,7 +1406,6 @@ CREATE TABLE `opsmanage_redis_server_config` (
   `db_type` varchar(10) DEFAULT NULL,
   `db_business` int(11) NOT NULL,
   `db_mode` varchar(10) NOT NULL,
-  `db_user` varchar(100) DEFAULT NULL,
   `db_passwd` varchar(200) DEFAULT NULL,
   `db_port` int(11) NOT NULL,
   `db_version` varchar(100) DEFAULT NULL,
@@ -1351,7 +1416,7 @@ CREATE TABLE `opsmanage_redis_server_config` (
   UNIQUE KEY `opsmanage_redis_server_c_db_business_db_env_db_as_6e10598b_uniq` (`db_business`,`db_env`,`db_assets_id`,`db_port`),
   KEY `opsmanage_redis_serv_db_assets_id_8fcf0436_fk_opsmanage` (`db_assets_id`),
   CONSTRAINT `opsmanage_redis_serv_db_assets_id_8fcf0436_fk_opsmanage` FOREIGN KEY (`db_assets_id`) REFERENCES `opsmanage_assets` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1371,7 +1436,7 @@ CREATE TABLE `opsmanage_redis_user` (
   `create_time` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `opsmanage_redis_user_db_user_e04bddf6_uniq` (`db`,`user`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1406,7 +1471,7 @@ CREATE TABLE `opsmanage_role_permissions` (
   KEY `opsmanage_role_permi_permission_id_fd7942a0_fk_auth_perm` (`permission_id`),
   CONSTRAINT `opsmanage_role_permi_permission_id_fd7942a0_fk_auth_perm` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
   CONSTRAINT `opsmanage_role_permissions_role_id_09fc4940_fk_opsmanage_role_id` FOREIGN KEY (`role_id`) REFERENCES `opsmanage_role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=167 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1530,7 +1595,7 @@ CREATE TABLE `opsmanage_server_assets` (
   UNIQUE KEY `assets_id` (`assets_id`),
   UNIQUE KEY `ip` (`ip`),
   CONSTRAINT `opsmanage_server_ass_assets_id_44d3470d_fk_opsmanage` FOREIGN KEY (`assets_id`) REFERENCES `opsmanage_assets` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1598,10 +1663,10 @@ CREATE TABLE `opsmanage_sql_execute_history` (
   `create_time` datetime(6) DEFAULT NULL,
   `exe_db_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `opsmanage_sql_execut_exe_db_id_59404186_fk_opsmanage` (`exe_db_id`),
-  KEY `opsmanage_sql_execute_histroy_exe_user_61d7560f` (`exe_user`),
-  CONSTRAINT `opsmanage_sql_execut_exe_db_id_59404186_fk_opsmanage` FOREIGN KEY (`exe_db_id`) REFERENCES `opsmanage_database_detail` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+  KEY `opsmanage_sql_execut_exe_db_id_2330170c_fk_opsmanage` (`exe_db_id`),
+  KEY `opsmanage_sql_execute_history_exe_user_69ba8739` (`exe_user`),
+  CONSTRAINT `opsmanage_sql_execut_exe_db_id_2330170c_fk_opsmanage` FOREIGN KEY (`exe_db_id`) REFERENCES `opsmanage_database_detail` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1658,7 +1723,7 @@ CREATE TABLE `opsmanage_structure` (
   KEY `opsmanage_structure_tree_id_dd97395a` (`tree_id`),
   KEY `opsmanage_structure_parent_id_360d7dd3` (`parent_id`),
   CONSTRAINT `opsmanage_structure_parent_id_360d7dd3_fk_opsmanage_structure_id` FOREIGN KEY (`parent_id`) REFERENCES `opsmanage_structure` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1673,7 +1738,7 @@ CREATE TABLE `opsmanage_tags_assets` (
   `tags_name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `tags_name` (`tags_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1710,7 +1775,7 @@ CREATE TABLE `opsmanage_uploadfiles` (
   PRIMARY KEY (`id`),
   KEY `opsmanage_uploadfile_file_order_id_a89b038e_fk_opsmanage` (`file_order_id`),
   CONSTRAINT `opsmanage_uploadfile_file_order_id_a89b038e_fk_opsmanage` FOREIGN KEY (`file_order_id`) REFERENCES `opsmanage_fileupload_audit_order` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1734,13 +1799,14 @@ CREATE TABLE `opsmanage_user` (
   `name` varchar(20) NOT NULL,
   `mobile` varchar(11) DEFAULT NULL,
   `email` varchar(50) NOT NULL,
+  `avatar` varchar(100) DEFAULT NULL,
   `post` varchar(50) DEFAULT NULL,
   `superior_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   KEY `opsmanage_user_superior_id_b20084af_fk_opsmanage_user_id` (`superior_id`),
   CONSTRAINT `opsmanage_user_superior_id_b20084af_fk_opsmanage_user_id` FOREIGN KEY (`superior_id`) REFERENCES `opsmanage_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1759,7 +1825,7 @@ CREATE TABLE `opsmanage_user_assets` (
   KEY `opsmanage_user_assets_user_id_f732eb54_fk_opsmanage_user_id` (`user_id`),
   CONSTRAINT `opsmanage_user_assets_assets_id_2ae11610_fk_opsmanage_assets_id` FOREIGN KEY (`assets_id`) REFERENCES `opsmanage_assets` (`id`),
   CONSTRAINT `opsmanage_user_assets_user_id_f732eb54_fk_opsmanage_user_id` FOREIGN KEY (`user_id`) REFERENCES `opsmanage_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1778,7 +1844,7 @@ CREATE TABLE `opsmanage_user_department` (
   KEY `opsmanage_user_depar_structure_id_43346e6f_fk_opsmanage` (`structure_id`),
   CONSTRAINT `opsmanage_user_depar_structure_id_43346e6f_fk_opsmanage` FOREIGN KEY (`structure_id`) REFERENCES `opsmanage_structure` (`id`),
   CONSTRAINT `opsmanage_user_department_user_id_d687135c_fk_opsmanage_user_id` FOREIGN KEY (`user_id`) REFERENCES `opsmanage_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1816,7 +1882,7 @@ CREATE TABLE `opsmanage_user_roles` (
   KEY `opsmanage_user_roles_role_id_3cdbfbf5_fk_opsmanage_role_id` (`role_id`),
   CONSTRAINT `opsmanage_user_roles_role_id_3cdbfbf5_fk_opsmanage_role_id` FOREIGN KEY (`role_id`) REFERENCES `opsmanage_role` (`id`),
   CONSTRAINT `opsmanage_user_roles_user_id_18047994_fk_opsmanage_user_id` FOREIGN KEY (`user_id`) REFERENCES `opsmanage_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1842,10 +1908,10 @@ CREATE TABLE `opsmanage_user_task` (
   `ctime` datetime(6) DEFAULT NULL,
   `etime` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `opsmanage_user_task_user_type_315f9166_idx` (`user`,`type`),
   KEY `opsmanage_user_task_task_id_78b5632b` (`task_id`),
   KEY `opsmanage_user_task_token_83f8e8c9` (`token`),
-  KEY `opsmanage_user_task_ctk_df6f4157` (`ctk`)
+  KEY `opsmanage_user_task_ctk_df6f4157` (`ctk`),
+  KEY `opsmanage_user_task_user_type_315f9166_idx` (`user`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1959,7 +2025,7 @@ CREATE TABLE `opsmanage_wiki_tag` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1986,4 +2052,4 @@ CREATE TABLE `opsmanage_zone_assets` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-03-28 13:19:16
+-- Dump completed on 2024-05-19 12:58:34

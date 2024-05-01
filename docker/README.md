@@ -1,55 +1,155 @@
+#### 1、安装docker
 
+```
+# yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine
+# yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+# yum install docker-ce docker-ce-cli containerd.io
+# systemctl start docker
+```
 
-1. 构建基础镜像(修改requirements.txt后需要重新构建)
-   根目录下执行：
-   docker build -t opsmanage-base  -f docker/Dockerfile .
-   或者使用脚本：docker/build.sh
+#### 2、安装docker-compse
 
-2. 修改应用配置文件conf/opsmanage.ini
+``````
+# sudo curl -L "https://github.com/docker/compose/releases/download/1.29.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+# ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
+``````
 
-3. 修改Django配置文件OpsManage/setting.py
+#### 3、下载代码
 
-    - 需要使用Django来访问静态文件时需要修改DEBUG = True(Django仅在调试模式下能对外提供静态文件访问)
+```
+# mkdir /data/apps && cd /data/apps
+# git clone -b v3 https://github.com/welliamcao/OpsManage.git
+```
 
-4. 构建应用镜像
+#### 4、修改docker-compse.yaml
 
-   根目录下执行：
-   docker build -t opsmanage-app -f docker/Dockerfile-app .
+```
+# cd /data/apps/OpsManage
+# vim docker/docker-compse.yaml
+version: "3.7"
+services:
+  mysql:
+    image: mysql:5.6  
+    container_name: mysql
+    environment:
+      - MYSQL_HOST=%
+      - MYSQL_DATABASE=opsmanage
+      - MYSQL_USER="数据库用户名"    #自行修改
+      - MYSQL_PASSWORD="数据库用户密码"  #自行修改
+      - MYSQL_ROOT_PASSWORD="数据库root密码"  #自行修改
+    volumes:
+      - /data/apps/mysql:/var/lib/mysql  
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    restart: always  
+    networks:
+      - default
+  redis:
+     container_name: redis
+     image: redis:3.2.8
+     command: redis-server 
+     environment:
+       REDIS_PASSWORD: "密码"   #自行修改
+       REDIS_AOF_ENABLED: "no"
+     ports:
+       - "6379:6379"
+     volumes:
+       - /data/apps/redis:/data
+     networks:
+       - default  
+  rabbitmq:
+     container_name: rabbitmq
+     image: rabbitmq:management
+     environment:
+       RABBITMQ_DEFAULT_USER: admin #自行修改
+       RABBITMQ_DEFAULT_PASS: admin #自行修改
+     volumes:
+       - '/data/apps/rabbitmq/data/:/var/lib/rabbitmq/mnesia/'       
+     ports:
+       - "5672:5672"
+       - "15672:15672"
+     networks:
+       - default  
 
-   或者使用脚本：docker/build-app.sh
+  ops_web:
+     image: opsmanage-base:latest
+     container_name: ops_web
+     environment:
+       MYSQL_USER: root
+       MYSQL_DATABASE: opsmanage
+       MYSQL_PASSWORD: "数据库用户密码" #记得自己修改
+     ports:
+       - "8000:8000"
+     volumes:
+       - /data/apps/OpsManage:/data/apps/opsmanage
+       - /data/apps/OpsManage/upload:/data/apps/opsmanage/upload
+       - /data/apps/OpsManage/logs:/data/apps/opsmanage/logs
+     command: bash /data/apps/opsmanage/docker/start.sh  
+     links:
+       - mysql
+       - redis
+       - rabbitmq
+     depends_on:
+       mysql:
+         condition: service_healthy
+       redis:
+         condition: service_started
+       rabbitmq:
+         condition: service_started  
+     restart: always
+     networks:
+       - default  
 
-5. 构建静态文件镜像(可选)
+  nginx:
+     image: nginx
+     container_name: nginx
+     ports:
+       - "80:80"   
+     volumes:
+       - /data/apps/nginx/logs:/var/log/nginx
+       - /data/apps/OpsManage/docker/opsmanage.conf:/etc/nginx/conf.d/default.conf
+       - /data/apps/OpsManage/static:/data/apps/opsmanage/static
+       - /data/apps/OpsManage/upload:/data/apps/opsmanage/upload
+     depends_on:
+       - ops_web
+     links:
+       - ops_web:ops_web
+     networks:
+       - default
 
-    根目录下执行：
-    docker build -t opsmanage-static -f docker/Dockerfile-static .
+networks:
+  default:
+```
 
-6. 启动容器
-   mkdir -p /data/docker-vol/opsmanage   #数据卷文件夹
-   chmod a+rw /data/docker-vol/opsmanage
-   touch /data/docker-vol/opsmanage/id_rsa   #这个文件根据需要写入用户SSH密钥
+#### 5、构建基础镜像
 
-   docker run -d --name opsmanage -p 8000:8000 \
-   -v /data/docker-vol/opsmanage/id_rsa:/root/.ssh/id_rsa \
-   -v /data/docker-vol/opsmanage/upload:/data/apps/opsmanage/upload \
-   172.31.0.6:5000/opsmanage-app
+```
+# cd /data/apps/OpsManage
+# docker build -t opsmanage-base  -f docker/Dockerfile .
+```
 
-7. 初始化数据库
-    $ docker run -it --rm opsmanage-app bash
-    python3 manage.py makemigrations account
-    python3 manage.py makemigrations wiki
-    python3 manage.py makemigrations orders
-    python3 manage.py makemigrations navbar
-    python3 manage.py makemigrations databases
-    python3 manage.py makemigrations asset
-    python3 manage.py makemigrations deploy
-    python3 manage.py makemigrations cicd
-    python3 manage.py makemigrations sched
-    python3 manage.py makemigrations apply
-    python3 manage.py migrate
-    python3 manage.py createsuperuser  #创建管理员账户与密码
-    (按Ctrl+P Ctrl+Q退出)
+#### 6、 修改应用配置文件conf/opsmanage.ini
 
-8. 访问页面
-    http://<ip>:8000
+```
+# cd /data/apps/OpsManage
+# vim conf/opsmanage.ini  #把里面的MySQL/Redis/RabbitMQ的密码改成docker-compose里面配置的一致
+```
+
+#### 7、 启动OpsManage
+
+```
+# cd /data/apps/OpsManage/docker
+# docker-compose up -d
+```
+
+#### 8、访问页面
+
+```
+http://<ip>:80
+User: admin
+Password: admin
+```
 
 

@@ -245,29 +245,32 @@ class ANSRunner(object):
                     cmdb_data = {}
                     data = y.get('ansible_facts')
                     disk_size = 0
-                    cpu = data['ansible_processor'][-1]
-                    for k,v in data['ansible_devices'].items():
+                    cpu = data.get('ansible_processor')[-1]
+                    for k,v in data.get('ansible_devices').items():
                         if k[0:2] in ['sd','hd','ss','vd']:
                             disk = int((int(v.get('sectors')) * int(v.get('sectorsize')))/1024/1024/1024)
                             disk_size = disk_size + disk
-                    cmdb_data['serial'] = data['ansible_product_serial'].split()[0]
+                    cmdb_data['serial'] = data.get('ansible_product_serial').split()[0]
                     cmdb_data['ip'] = x
                     cmdb_data['cpu'] = cpu.replace('@','')
-                    cmdb_data['ram_total'] = int(data['ansible_memtotal_mb'])/1000
+                    cmdb_data['ram_total'] = int(data.get('ansible_memtotal_mb'))/1000
                     cmdb_data['disk_total'] = int(disk_size)
-                    cmdb_data['system'] =  data['ansible_distribution'] + ' ' + data['ansible_distribution_version'] + ' ' + data['ansible_userspace_bits']
-                    cmdb_data['model'] = data['ansible_product_name'].split(':')[0]
-                    cmdb_data['cpu_number'] = data['ansible_processor_count']
-                    cmdb_data['vcpu_number'] = data['ansible_processor_vcpus']
-                    cmdb_data['cpu_core'] = data['ansible_processor_cores']
-                    cmdb_data['hostname'] = data['ansible_hostname']
-                    cmdb_data['kernel'] = str(data['ansible_kernel'])
-                    cmdb_data['manufacturer'] = data['ansible_system_vendor']
-                    if data['ansible_selinux']: 
-                        cmdb_data['selinux'] = data['ansible_selinux'].get('status')
+                    if data.get('ansible_lsb'):
+                        cmdb_data['system'] = data.get('ansible_lsb').get('description')
+                    else:
+                        cmdb_data['system'] =  data.get('ansible_distribution') + ' ' + data.get('ansible_distribution_version') + ' ' + data.get('ansible_userspace_bits')
+                    cmdb_data['model'] = data.get('ansible_product_name').split(':')[0]
+                    cmdb_data['cpu_number'] = data.get('ansible_processor_count')
+                    cmdb_data['vcpu_number'] = data.get('ansible_processor_vcpus')
+                    cmdb_data['cpu_core'] = data.get('ansible_processor_cores')
+                    cmdb_data['hostname'] = data.get('ansible_hostname')
+                    cmdb_data['kernel'] = str(data.get('ansible_kernel'))
+                    cmdb_data['manufacturer'] = data.get('ansible_system_vendor')
+                    if data.get('ansible_selinux'): 
+                        cmdb_data['selinux'] = data.get('ansible_selinux').get('status')
                     else: 
                         cmdb_data['selinux'] = 'disabled'
-                    cmdb_data['swap'] = int(data['ansible_swaptotal_mb'])/1000 
+                    cmdb_data['swap'] = int(data.get('ansible_swaptotal_mb'))/1000 
                     #获取网卡资源
                     nks = []
                     for nk in data.keys():

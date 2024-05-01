@@ -820,20 +820,29 @@ class AssetsSource(object):
             sList,resource = self.idSourceList(ids=request.POST.getlist('ids[]'))
             ANS = ANSRunner(resource)  
             ANS.run_model(host_list=sList,module_name='setup',module_args="") 
-            data = ANS.handle_cmdb_data(ANS.get_model_result())    
+            data = json.loads(ANS.get_model_result())
+            if data.get("failed") or data.get("unreachable"):
+                logger.error(msg=data)            
+            handel_data = ANS.handle_cmdb_data(json.dumps(data))    
                     
         elif request.POST.get('model')=='collector':
             sList,resource = self.idSource(ids=request.POST.get('ids'))
             ANS = ANSRunner(resource)  
             ANS.run_model(host_list=sList,module_name='setup',module_args="")  
-            data = ANS.handle_cmdb_data(ANS.get_model_result())    
+            data = json.loads(ANS.get_model_result())
+            if data.get("failed") or data.get("unreachable"):
+                logger.error(msg=data)            
+            handel_data = ANS.handle_cmdb_data(json.dumps(data))  
                    
         else:
             sList,resource = self.idSource(ids=request.POST.get('ids'))
             ANS = ANSRunner(resource)  
-            ANS.run_model(host_list=sList,module_name='crawHw',module_args="")  
-            data = ANS.handle_cmdb_crawHw_data(ANS.get_model_result())                          
-        return data,ANS.get_model_result()
+            ANS.run_model(host_list=sList,module_name='crawHw',module_args="")
+            data = json.loads(ANS.get_model_result())
+            if data.get("failed") or data.get("unreachable"):
+                logger.error(msg=data)            
+            handel_data = ANS.handle_cmdb_data(json.dumps(data))                         
+        return handel_data,data
     
     def batch(self, request):  
         return self.collector(request)
