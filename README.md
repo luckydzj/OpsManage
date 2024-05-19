@@ -28,7 +28,7 @@
 
 ## 安装环境配置
 
-注: [使用docker-compose安装](https://github.com/welliamcao/OpsManage/blob/v3/README.md)推荐！！！
+注: [使用docker-compose安装](https://github.com/welliamcao/OpsManage/blob/v3/docker/README.md)推荐！！！
 
 一、安装Python
 ```
