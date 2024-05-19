@@ -2,7 +2,6 @@
 count=$(mysql -h mysql -D ${MYSQL_DATABASE} -e "show tables;" -u${MYSQL_USER} -p${MYSQL_ROOT_PASSWORD}|wc -l)
 if [ "${count}" -eq 0 ]
    then
-       echo "--------------------"
        mysql -h mysql -D ${MYSQL_DATABASE} -u${MYSQL_USER} -p${MYSQL_ROOT_PASSWORD} < /data/apps/opsmanage/docker/init.sql
        cd /data/apps/opsmanage/ && python manage.py loaddata docker/superuser.json
 fi

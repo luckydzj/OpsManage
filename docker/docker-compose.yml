@@ -18,6 +18,7 @@ services:
     restart: always  
     networks:
       - default
+      
   redis:
      container_name: redis
      image: redis:3.2.8
@@ -28,15 +29,18 @@ services:
      ports:
        - "6379:6379"
      volumes:
-       - /data/apps/redis:/data/redis
+       - /data/apps/redis:/data
      networks:
        - default  
+       
   rabbitmq:
      container_name: rabbitmq
      image: rabbitmq:management
      environment:
        RABBITMQ_DEFAULT_USER: admin
        RABBITMQ_DEFAULT_PASS: admin
+     volumes:
+       - '/data/apps/rabbitmq/data/:/var/lib/rabbitmq/mnesia/'
      ports:
        - "5672:5672"
        - "15672:15672"
@@ -51,12 +55,12 @@ services:
        MYSQL_DATABASE: opsmanage
        MYSQL_PASSWORD: "数据库用户密码"
      ports:
-       - "8000:8000" 
+       - "8000:8000"  
      volumes:
-       - /data/apps/nginx/logs:/var/log/nginx
-       - /data/apps/OpsManage/docker/opsmanage.conf:/etc/nginx/conf.d/default.conf
-       - /data/apps/OpsManage/static:/data/apps/OpsManage/static
-     command: bash /data/apps/opsmanage/docker/start.sh   
+       - /data/apps/OpsManage:/data/apps/opsmanage
+       - /data/apps/OpsManage/upload:/data/apps/opsmanage/upload
+       - /data/apps/OpsManage/logs:/data/apps/opsmanage/logs
+     command: bash /data/apps/opsmanage/docker/start.sh  
      links:
        - mysql
        - redis
@@ -67,23 +71,26 @@ services:
        redis:
          condition: service_started
        rabbitmq:
-         condition: service_started      
+         condition: service_started       
      restart: always
      networks:
        - default  
 
- # nginx:
- #    image: opsmanage-nginx
- #    container_name: nginx
- #    ports:
- #      - "80:80"   
- #    volumes:
- #      - /mnt/OpsManage/static:/usr/share/nginx/html/static
- #    depends_on:
- #      - ops_web
- #    links:
- #      - ops_web:ops_web
- #    networks:
- #      - default
+  nginx:
+     image: nginx
+     container_name: nginx
+     ports:
+       - "80:80"   
+     volumes:
+       - /data/apps/nginx/logs:/var/log/nginx
+       - /data/apps/OpsManage/docker/opsmanage.conf:/etc/nginx/conf.d/default.conf
+       - /data/apps/OpsManage/static:/data/apps/opsmanage/static
+       - /data/apps/OpsManage/upload:/data/apps/opsmanage/upload
+     depends_on:
+       - ops_web
+     links:
+       - ops_web:ops_web
+     networks:
+       - default
 networks:
   default:
