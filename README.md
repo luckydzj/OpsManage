@@ -205,7 +205,7 @@ stopsignal=QUIT
 # vim /etc/nginx/conf.d/opsmanage.conf 
 server {
     listen 80 ;
-    server_name 192.168.1.233;
+    server_name 192.168.1.233;  #192.168.1.233替换成自己服务器的IP地址
 
     access_log /var/log/nginx/opsmanage_access.log;
     error_log /var/log/nginx/opsmanage_error.log;
@@ -218,7 +218,7 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
-        proxy_pass http://192.168.1.233:8000$request_uri;
+        proxy_pass http://192.168.1.233:8000$request_uri;  #192.168.1.233替换成自己服务器的IP地址
     }
     location /static/ {
         expires 30d;

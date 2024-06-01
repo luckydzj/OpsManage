@@ -3,8 +3,19 @@ count=$(mysql -h mysql -D ${MYSQL_DATABASE} -e "show tables;" -u${MYSQL_USER} -p
 if [[ $? -eq 0 ]]; then
    if [ "${count}" -eq 0 ]
       then
-         mysql -h mysql -D ${MYSQL_DATABASE} -u${MYSQL_USER} -p${MYSQL_ROOT_PASSWORD} < /data/apps/opsmanage/docker/init.sql
-         cd /data/apps/opsmanage/ && python manage.py loaddata docker/superuser.json
+         cd /data/apps/opsmanage/  && \
+         python3 manage.py makemigrations account && \
+         python3 manage.py makemigrations wiki && \
+         python3 manage.py makemigrations orders && \
+         python3 manage.py makemigrations navbar && \
+         python3 manage.py makemigrations databases && \
+         python3 manage.py makemigrations asset && \
+         python3 manage.py makemigrations deploy && \
+         python3 manage.py makemigrations cicd && \
+         python3 manage.py makemigrations sched && \
+         python3 manage.py makemigrations apply && \
+         python3 manage.py migrate && \
+         python manage.py loaddata docker/superuser.json
    fi 
 else
     echo "MySQL connection failed, program exited"
