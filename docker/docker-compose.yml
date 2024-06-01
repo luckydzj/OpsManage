@@ -22,7 +22,7 @@ services:
   redis:
      container_name: redis
      image: redis:3.2.8
-     command: redis-server 
+     command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
      environment:
        REDIS_PASSWORD: "密码" # 
        REDIS_AOF_ENABLED: "no"

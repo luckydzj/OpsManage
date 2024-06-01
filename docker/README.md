@@ -49,7 +49,7 @@ services:
   redis:
      container_name: redis
      image: redis:3.2.8
-     command: redis-server 
+     command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD" 
      environment:
        REDIS_PASSWORD: "密码"   #自行修改
        REDIS_AOF_ENABLED: "no"
@@ -134,7 +134,7 @@ networks:
 
 ```
 # cd /data/apps/OpsManage
-# vim conf/opsmanage.ini  #把里面的MySQL/Redis/RabbitMQ的密码改成docker-compose里面配置的一致
+# vim conf/opsmanage.ini  #把MySQL/Redis/RabbitMQ的host/password改成docker-compose里面配置的一致，host等于具体container_name
 ```
 
 #### 7、 启动OpsManage
