@@ -259,7 +259,8 @@ class AssetList(APIView):
         if request.user.is_superuser:             
             snippets = Assets.objects.all()
         else:
-            snippets = [ ds.assets for ds in User_Server.objects.filter(user=request.user)]
+            user_assets = [ ds.assets.id for ds in User_Server.objects.filter(user=request.user)]
+            snippets = Assets.objects.filter(id__in=user_assets)
         page = serializers.PageConfig()  # 注册分页
         page_assets_list = page.paginate_queryset(queryset=snippets, request=request, view=self)
         ser = serializers.AssetsSerializer(instance=page_assets_list, many=True)
